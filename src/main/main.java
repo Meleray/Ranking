@@ -33,13 +33,13 @@ import org.apache.hadoop.util.ToolRunner;
 public class Click_Pattern implements Writable {
     public String query  =  "";
     public int geolocation  =  -1;
-    public List < String> link_show  =  new ArrayList < >();
-    public List < String> link_click  =  new ArrayList < >();
-    public List < String> host_show  =  new ArrayList < >();
-    public List < String> host_click  =  new ArrayList < >();
-    public List < Boolean> pos_clicks  =  new ArrayList < Boolean>();
-    public List < Long> timestamps  =  new ArrayList < >();
-    public Map < String, Integer> time_map  =  new HashMap < >();
+    public List <String> link_show  =  new ArrayList <>();
+    public List <String> link_click  =  new ArrayList <>();
+    public List <String> host_show  =  new ArrayList <>();
+    public List <String> host_click  =  new ArrayList <>();
+    public List <Boolean> pos_clicks  =  new ArrayList <Boolean>();
+    public List <Long> timestamps  =  new ArrayList <>();
+    public Map < String, Integer> time_map  =  new HashMap <>();
     public boolean timings;
 
     public Click_Pattern() {
@@ -95,7 +95,7 @@ public class Click_Pattern implements Writable {
             link_show.add(url);
             host_show.add(parse_host(url));
         }
-        link_click  =  new ArrayList < >();
+        link_click  =  new ArrayList <>();
         tmp  =   args[idx++].replace(",https://",",http://");
         tmp  =  tmp.replaceFirst("^https://", "http://");
         tmp  =  tmp.replaceAll(",(?!http://)([a-zA-Z]+)", ",http://$1");
@@ -108,7 +108,7 @@ public class Click_Pattern implements Writable {
         }
         int k = 0, m = 0;
         while(k  <  link_show.size() && m <  link_click.size()){
-            if(link_show.get(k).equals(link_click.get(m))){
+            if (link_show.get(k).equals(link_click.get(m))){
                 pos_clicks.add(true);
                 k++;
                 m++;
@@ -119,7 +119,7 @@ public class Click_Pattern implements Writable {
         }
         for (int i = k; i < link_show.size(); ++i)
             pos_clicks.add(false);
-        timestamps  =  new ArrayList < >();
+        timestamps  =  new ArrayList <>();
         final String[] timestamps_args  =  args[idx++].split(',');
         for (final String timestamp : timestamps_args) {
             timestamps.add(Long.parseLong(timestamp));
@@ -191,8 +191,8 @@ public class Click_model extends Configured implements Tool {
     public static final String query-hosts  =  "query-hosts";
     public static final String queries  =  "queries";
     
-    static private Map < String, String> get_url(final Mapper.Context context, final Path pt) {
-        final Map < String, String> map  =  new HashMap < >();
+    static private Map <String, String> get_url(final Mapper.Context context, final Path pt) {
+        final Map <String, String> map  =  new HashMap < >();
         try {
             final FileSystem fs  =  FileSystem.get(context.getConfiguration());
             final BufferedReader buffer  =  new BufferedReader(new InputStreamReader(fs.open(pt),"UTF8"));
@@ -210,8 +210,8 @@ public class Click_model extends Configured implements Tool {
         return map;
     }
 
-    static private Map < String, String> get_host(final Mapper.Context context, final Path pt) {
-        final Map < String, String> map  =  new HashMap < >();
+    static private Map <String, String> get_host(final Mapper.Context context, final Path pt) {
+        final Map <String, String> map  =  new HashMap < >();
         try {
             final FileSystem fs  =  FileSystem.get(context.getConfiguration());
             final BufferedReader buffer  =  new BufferedReader(new InputStreamReader(fs.open(pt),"UTF8"));
@@ -230,8 +230,8 @@ public class Click_model extends Configured implements Tool {
         return map;
     }
 
-    static private Map < String, String> get_queries(final Mapper.Context context, final Path pt) {
-        final Map < String, String> map  =  new HashMap < >();
+    static private Map <String, String> get_queries(final Mapper.Context context, final Path pt) {
+        final Map <String, String> map  =  new HashMap < >();
         try {
             final FileSystem fs  =  FileSystem.get(context.getConfiguration());
             final BufferedReader buffer  =  new BufferedReader(new InputStreamReader(fs.open(pt), "UTF8"));
@@ -247,19 +247,19 @@ public class Click_model extends Configured implements Tool {
         return map;
     }
 
-    public static class Mapper extends Mapper < LongWritable, Text, Text, Text> {
+    public static class Mapper extends Mapper <LongWritable, Text, Text, Text> {
 
-        static Map < String, String> ids;
-        static Map < String, String> hosts;
-        static Map < String, String> queries;
-        static Map < String, String> queries_yandex;
+        static Map <String, String> ids;
+        static Map <String, String> hosts;
+        static Map <String, String> queries;
+        static Map <String, String> queries_yandex;
 
         @Override
         protected void setup(final Context context) {
             super.setup(context);
-            final Path urls  =  new Path("check/url.data");
-            final Path q  =  new Path("check/queries.tsv");
-            final Path qspell  =  new Path("check/Yandex_spell.txt");
+            final Path urls  =  new Path("ipynb/url.data");
+            final Path q  =  new Path("ipynb/queries.tsv");
+            final Path qspell  =  new Path("ipynb/Yandex_spell.txt");
             ids  =  get_url(context, urls);
             queries  =  get_queries(context, q);
             queries_yandex  =   get_queries(context, qspell);
@@ -279,23 +279,23 @@ public class Click_model extends Configured implements Tool {
                     if (qid =  = null)
                         flag_query = false;
                 }
-                if(flag_query){
+                if (flag_query){
                     int[] res  =  new int[6];
                     res[0]  =  pattern.link_show.size();
                     res[1]  =  pattern.link_click.size();
-                    if(pattern.timings){
+                    if (pattern.timings){
                         int time  =  0;
                         for(int i = 0; i <  pattern.link_click.size();++i){
-                            time+ = pattern.time_map.get(pattern.link_click.get(i)); 
+                            time += pattern.time_map.get(pattern.link_click.get(i)); 
                         }
                         res[2] = time;
                     }
-                    int avg  =  0;
+                    int mean  =  0;
                     for(int i = 0; i < pattern.link_click.size();++i)
-                        avg+ = pattern.link_show.indexOf(pattern.link_click.get(i))+1;
-                    if(pattern.link_click.size()! = 0){
+                        mean += pattern.link_show.indexOf(pattern.link_click.get(i))+1;
+                    if (pattern.link_click.size()! = 0){
                         res[3] = pattern.link_show.indexOf(pattern.link_click.get(0))+1;
-                        res[4]  =  avg / pattern.link_click.size();
+                        res[4]  =  mean / pattern.link_click.size();
                     }else{
                         res[5] = 1;
                     }
@@ -308,39 +308,40 @@ public class Click_model extends Configured implements Tool {
                             int[] res  =  new int[11];
                             if (pattern.pos_clicks.get(i)){
                                 res[0] = 1;
-                                if(pattern.link_click.indexOf(pattern.link_show.get(i)) == 0)
+                                if (pattern.link_click.indexOf(pattern.link_show.get(i)) == 0)
                                     res[1] = 1;
                                 if (pattern.link_click.indexOf(pattern.link_show.get(i)) == pattern.link_click.size()-1)
                                     res[2] = 1;
                                 res[4] = pattern.link_click.indexOf(pattern.link_show.get(i))+1;
-                                if(pattern.timings)
+                                if (pattern.timings)
                                     res[5] = pattern.time_map.get(pattern.link_show.get(i));
-                                int k = 0,m = i-1;
+                                int k = 0, m = i-1;
                                 while(m>0 && !pattern.pos_clicks.get(m)){--m;++k;}
                                 res[9] =  m> = 0 ? k: 0;
-                                k = 0; m = i+1;
+                                k = 0; 
+                                m = i+1;
                                 while(m < pattern.pos_clicks.size() && !pattern.pos_clicks.get(m)){++m;++k;}
                                 res[10] = m! = pattern.pos_clicks.size() ? k : 0;
                             }
-                            if(pattern.link_click.size() =  = 0)
+                            if (pattern.link_click.size() == 0)
                                 res[6] = 1;
                             for(int j =  0; j  <  pattern.link_click.size();++j){
-                                if(pattern.link_show.indexOf(pattern.link_click.get(j)) < i)
+                                if (pattern.link_show.indexOf(pattern.link_click.get(j)) < i)
                                     break;
-                                if(pattern.link_show.indexOf(pattern.link_click.get(j))>i){
+                                if (pattern.link_show.indexOf(pattern.link_click.get(j))>i){
                                     res[6] = 1;
                                     break;
                                 }
-                                if(i! = 0)
+                                if (i! = 0)
                                     res[7] = pattern.pos_clicks.get(i-1) ? 1 : 0;
-                                if(i! = pattern.link_show.size()-1)
+                                if (i! = pattern.link_show.size()-1)
                                     res[8]  = pattern.pos_clicks.get(i+1) ? 1 : 0;
                             }
                             res[3] = i+1;
                             String str = String.valueOf(res[0])+","+String.valueOf(res[1])+","+String.valueOf(res[2])+","+
                                 String.valueOf(res[3])+","+String.valueOf(res[4])+","+String.valueOf(res[5])+","+String.valueOf(res[6])+
                                 ","+String.valueOf(res[7])+","+String.valueOf(res[8])+","+String.valueOf(res[9])+","+String.valueOf(res[10]);                            
-                            if(flag_query) {
+                            if (flag_query) {
                                 context.write(new Text("query-docs,"+qid+'\t'+String.valueOf(ids.get(pattern.link_show.get(i)))),new Text(str));
                             }
                             context.write(new Text("docs,"+String.valueOf(ids.get(pattern.link_show.get(i)))),new Text(str));
@@ -351,12 +352,12 @@ public class Click_model extends Configured implements Tool {
                             int[] res  =  new int[11];
                             if (pattern.pos_clicks.get(i)){
                                 res[0] = 1;
-                                if(pattern.host_click.indexOf(pattern.host_show.get(i)) == 0)
+                                if (pattern.host_click.indexOf(pattern.host_show.get(i)) == 0)
                                     res[1] = 1;
                                 if (pattern.host_click.indexOf(pattern.host_show.get(i)) == pattern.host_click.size()-1)
                                     res[2] = 1;
                                 res[4] = pattern.host_click.indexOf(pattern.host_show.get(i))+1;
-                                if(pattern.timings){
+                                if (pattern.timings){
                                     res[5] = pattern.time_map.get(pattern.link_show.get(i));
                                 int k = 0,m = i-1;
                                 while(m>0 && !pattern.pos_clicks.get(m)){--m;++k;}
@@ -366,25 +367,25 @@ public class Click_model extends Configured implements Tool {
                                 res[10] =  k;
                                 }
                             }
-                            if(pattern.host_click.size() =  = 0)
+                            if (pattern.host_click.size() =  = 0)
                                 res[6] = 1;
                             for(int j =  0; j  <  pattern.link_click.size();++j){
-                                if(pattern.host_show.indexOf(pattern.host_click.get(j)) < i)
+                                if (pattern.host_show.indexOf(pattern.host_click.get(j)) < i)
                                     break;
-                                if(pattern.host_show.indexOf(pattern.host_click.get(j))>i){
+                                if (pattern.host_show.indexOf(pattern.host_click.get(j))>i){
                                     res[6] = 1;
                                     break;
                                 }
-                                if(i>0)
+                                if (i>0)
                                     res[7] = pattern.pos_clicks.get(i-1) ? 1 : 0;
-                                if(i < pattern.link_show.size()-1)
+                                if (i < pattern.link_show.size()-1)
                                     res[8]  = pattern.pos_clicks.get(i+1) ? 1 : 0;
                             }
                             res[3] = i+1;
                             String str = String.valueOf(res[0])+","+String.valueOf(res[1])+","+String.valueOf(res[2])+","+
                                 String.valueOf(res[3])+","+String.valueOf(res[4])+","+String.valueOf(res[5])+","+String.valueOf(res[6])+
                                 ","+String.valueOf(res[7])+","+String.valueOf(res[8])+","+String.valueOf(res[9])+","+String.valueOf(res[10]);
-                            if(flag_query){
+                            if (flag_query){
                                 context.write(new Text("query-hosts,"+qid+'\t'+String.valueOf(hosts.get(pattern.host_show.get(i)))),new Text(str));
                             } 
                             context.write(new Text("hosts,"+String.valueOf(hosts.get(pattern.host_show.get(i)))),new Text(str));
@@ -417,7 +418,6 @@ public class Click_model extends Configured implements Tool {
                 int clicks_q =  0;
                 int time  =  0;
                 int first_clicks_q  =  0;
-                int avg_pos_click =  0;
                 int shows_noclick_q  =  0;
                 for(Text str : nums){
                     String[] data  =  str.toString().split("\\,");
@@ -426,7 +426,6 @@ public class Click_model extends Configured implements Tool {
                     clicks_q+ = Integer.valueOf(data[1]);
                     time+ = Integer.valueOf(data[2]);
                     first_clicks_q+ = Integer.valueOf(data[3]);
-                    avg_pos_click+ = Integer.valueOf(data[4]);
                     shows_noclick_q+ = Integer.valueOf(data[5]);
                 }
                 String res  =  "count_query:"+String.valueOf(count_q)+ "\tshows_docs:" + String.valueOf(shows_q)+"\tclicks_docs:"+String.valueOf(clicks_q)+
@@ -434,8 +433,8 @@ public class Click_model extends Configured implements Tool {
                 "\tshows_noclick:"+String.valueOf(shows_noclick_q);
                 multipleOutputs.write(new Text(keys[1]), new Text(res.trim()), queries+"/part");
             } else {
-            int[] pos_clicks =  new int[12];
-            int[] pos_shows =  new int[12];
+            int[] pos_clicks =  new int[7];
+            int[] pos_shows =  new int[7];
             int clicks  =  0;
             int shows =  0;
             double time  =  0.;
@@ -443,6 +442,8 @@ public class Click_model extends Configured implements Tool {
             int last_clicks =  0;
             int beforeclick = 0;
             int afterclick  =  0;
+            int shows_not_top = 0;
+            int clicks_not_top = 0;
             for (final Text str : nums) {
                 String[] data  =  str.toString().split("\\,");
                 int click  =  Integer.parseInt(data[0]);
@@ -454,30 +455,34 @@ public class Click_model extends Configured implements Tool {
                 beforeclick+ = Integer.parseInt(data[9]);;
                 afterclick  =  Integer.parseInt(data[10]);;
                 shows++;
-                clicks+ = click;
-                first_clicks+ = fclick;
-                last_clicks+ = lckick;
-                if(pos_show < 11){
-                    pos_shows[pos_show]+ = 1;
-                    show_pos_if_click[pos_show]+ = click;
+                clicks += click;
+                first_clicks += fclick;
+                last_clicks += lckick;
+                if (pos_show < 6){
+                    pos_shows[pos_show]+= 1;
                 }
                 else{    
-                    pos_shows[11]+ = 1;
-                    show_pos_if_click[11]+ = click;
+                    pos_shows[6]+= 1;
                 }
-                if(pos_click < 11)
-                    pos_clicks[pos_click]+ = 1;
+                if (pos_click < 6)
+                    pos_clicks[pos_click]+= 1;
                 else
-                    pos_clicks[11]+ = 1;
+                    pos_clicks[6] += 1;
+            }
+            shows_not_top = shows;
+            clicks_not_top = clicks;
+            for(int i = 1;i < 7;++i){
+                shows_not_top -= pos_shows[i];
+                clicks_not_top -= pos_clicks[i];
             }
             String res  =  "shows:"+String.valueOf(shows)+"\tclicks:"+String.valueOf(clicks)+"\ttime:"+String.valueOf(time)+"\tfirst_clicks:"+String.valueOf(first_clicks)+
-                "\tlast_clicks:"+String.valueOf(last_clicks)+"\tbefore_clicks:"+String.valueOf(beforeclick)+"\tafter_clicks:"+String.valueOf(afterclick)+"\tpos_clicks:";
-            for(int i = 1;i < 12;++i){
-                res+ = String.valueOf(pos_clicks[i])+" ";
+                "\tlast_clicks:"+String.valueOf(last_clicks)+"\tbefore_clicks:"+String.valueOf(beforeclick)+"\tafter_clicks:"+String.valueOf(afterclick)+"\tshows_not_top"+String.valueOf(shows_not_top)+"\tclicks_not_top"+String.valueOf(clicks_not_top)+"\tpos_clicks:";
+            for(int i = 1;i < 7;++i){
+                res += String.valueOf(pos_clicks[i])+" ";
             }
-            res+ = "\tpos_shows:";
-            for(int i = 1;i < 12;++i){
-                res+ = String.valueOf(pos_shows[i])+" ";
+            res+= "\tpos_shows:";
+            for(int i = 1;i < 7;++i){
+                res += String.valueOf(pos_shows[i])+" ";
             }
             switch(keys[0]){
             case("docs"):
