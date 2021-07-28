@@ -6,5 +6,5 @@ This algorithm uses CTR click model and other behavioral features in combination
 For evaluating an NDCG@5 metric is used.
 
 To run the code you should:
-- Run java code in 'src' folder
-- Run code in jupyter notebook in folder 'jpynb'
+- Run java code in ```src``` folder
+- Run code in jupyter notebook in folder ```jpynb```
